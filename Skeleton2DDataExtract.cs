@@ -98,6 +98,8 @@ namespace DTWGestureRecognition
                 p[i].Y /= shoulderDist;
             }
             */
+
+
             // Launch the event!
             Skeleton2DdataCoordReady(null, new Skeleton2DdataCoordEventArgs(p));
         }
