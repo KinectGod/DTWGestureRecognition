@@ -55,11 +55,12 @@ namespace DTWGestureRecognition
         /// <returns>The coordinates of our _points</returns>
         internal double[] GetCoords()
         {
-            var tmp = new double[_points.Length * 2];
+            var tmp = new double[_points.Length * 3];
             for (int i = 0; i < _points.Length; i++)
             {
                 tmp[2 * i] = _points[i].X;
                 tmp[(2 * i) + 1] = _points[i].Y;
+                tmp[(2 * i) + 2] = _points[i].Z;
             }
 
             return tmp;

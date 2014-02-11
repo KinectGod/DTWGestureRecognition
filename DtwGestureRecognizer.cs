@@ -21,6 +21,7 @@ namespace DTWGestureRecognition
 {
     using System;
     using System.Collections;
+    using System.Windows.Media.Media3D;
 
     /// <summary>
     /// Dynamic Time Warping nearest neighbour sequence comparison class.
@@ -69,6 +70,9 @@ namespace DTWGestureRecognition
         /// The recorded gesture sequences
         /// </summary>
         private readonly ArrayList _sequences;
+
+
+        private readonly double judgement;
 
         /// <summary>
         /// Initializes a new instance of the DtwGestureRecognizer class
@@ -314,6 +318,7 @@ namespace DTWGestureRecognition
         /// <returns>Euclidian distance between the two points</returns>
         private double Dist2(double[] a, double[] b)
         {
+            /*
             double d = 0;
             for (int i = 0; i < _dimension; i++)
             {
@@ -325,6 +330,38 @@ namespace DTWGestureRecognition
             else
                 return 0;
             //return Math.Sqrt(d);
+             * */
+            double score = 0.0;
+            // 0 represent learner, 1 master
+            double[] XYplane = new double[2];
+            double[] ZYplane = new double[2];
+            Vector3D Learner_joint0to1; 
+            Vector3D master_joint0to1;
+            // used to store the vector project to the planes
+            Vector3D[] ProjectToXY = new Vector3D[2];
+            Vector3D[] ProjectToZY = new Vector3D[2];
+
+            for (int i = 0; i < _dimension; i+=3)
+            {
+                // calculate vector joining two points
+                Learner_joint0to1 = new Vector3D(a[i] - a[i + 3], a[i + 1] - a[i + 4], a[i + 2] - a[i + 5]);
+                ProjectToXY[0] = new Vector3D (Math.Abs(a[i] - a[i + 3]), Math.Abs(a[i + 1] - a[i + 4]), 0);
+                ProjectToZY[0] = new Vector3D(0, Math.Abs(a[i + 1] - a[i + 4]), Math.Abs(a[i + 2] - a[i + 5]));
+
+                master_joint0to1 = new Vector3D(b[i] - b[i + 3], b[i + 1] - b[i + 4], b[i + 2] - b[i + 5]);
+                ProjectToXY[1] = new Vector3D(Math.Abs(b[i] - b[i + 3]), Math.Abs(b[i + 1] - b[i + 4]), 0);
+                ProjectToZY[1] = new Vector3D (0,  b[i + 1] - b[i + 4], b[i + 2] - b[i + 5]);
+
+                // calculate angle between the vector and the plane
+                XYplane[0] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToXY[0]);
+                XYplane[1] = Vector3D.AngleBetween(master_joint0to1, ProjectToXY[1]);
+                ZYplane[0] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToZY[0]);
+                ZYplane[1] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToZY[0]);
+
+                
+            }
+
+            return 0;
 
         }
     }
