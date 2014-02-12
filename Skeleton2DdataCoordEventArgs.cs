@@ -58,9 +58,9 @@ namespace DTWGestureRecognition
             var tmp = new double[_points.Length * 3];
             for (int i = 0; i < _points.Length; i++)
             {
-                tmp[2 * i] = _points[i].X;
-                tmp[(2 * i) + 1] = _points[i].Y;
-                tmp[(2 * i) + 2] = _points[i].Z;
+                tmp[3 * i] = _points[i].X;
+                tmp[(3 * i) + 1] = _points[i].Y;
+                tmp[(3 * i) + 2] = _points[i].Z;
             }
             return tmp;
         }
