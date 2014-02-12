@@ -62,7 +62,7 @@ namespace DTWGestureRecognition
         /// <summary>
         /// How many skeleton frames to store in the _video buffer
         /// </summary>
-        private const int BufferSize = 32;
+        private const int BufferSize = 96;
 
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
@@ -77,12 +77,15 @@ namespace DTWGestureRecognition
         /// <summary>
         /// Where we will save our gestures to. The app will append a data/time and .txt to this string
         /// </summary>
-        private const string GestureSaveFileLocation = @"H:\My Dropbox\Dropbox\Microsoft Kinect SDK Beta\DTWGestureRecognition\DTWGestureRecognition\";
+        private const string GestureSaveFileLocation = @"C:\";
 
         /// <summary>
         /// Where we will save our gestures to. The app will append a data/time and .txt to this string
         /// </summary>
         private const string GestureSaveFileNamePrefix = @"RecordedGestures";
+
+        /// number of joints that we need
+        private const int dimension = 8;
 
         /// <summary>
         /// Dictionary of all the joints Kinect SDK is capable of tracking. You might not want always to use them all but they are included here for thouroughness.
@@ -186,8 +189,9 @@ namespace DTWGestureRecognition
             string gestureName = String.Empty;
 
             // TODO I'm defaulting this to 12 here for now as it meets my current need but I need to cater for variable lengths in the future
+
             ArrayList frames = new ArrayList();
-            double[] items = new double[12];
+            double[] items = new double[dimension * 3];
 
             // Read the file and display it line by line.
             System.IO.StreamReader file = new System.IO.StreamReader(fileLocation);
@@ -203,7 +207,7 @@ namespace DTWGestureRecognition
                 {
                     frames.Add(items);
                     itemCount = 0;
-                    items = new double[12];
+                    items = new double[dimension * 3];
                     continue;
                 }
 
@@ -484,7 +488,7 @@ namespace DTWGestureRecognition
 
             _lastTime = DateTime.Now;
 
-            _dtw = new DtwGestureRecognizer(18, 0.6, 2, 2, 10); 
+            _dtw = new DtwGestureRecognizer(dimension * 3, 0.6, 2, 2, 10);
             _video = new ArrayList();
 
             // If you want to see the depth image and frames per second then include this
@@ -528,19 +532,16 @@ namespace DTWGestureRecognition
             currentBufferFrame.Text = _video.Count.ToString();
 
             // We need a sensible number of frames before we start attempting to match gestures against remembered sequences
-            if (_video.Count > MinimumFrames && _capturing == false )
+            if (_video.Count > MinimumFrames && _capturing == false)
             {
                 ////Debug.WriteLine("Reading and video.Count=" + video.Count);
-                //string s = _dtw.Recognize(_video);
-                //results.Text = "Recognised as: " + s;
-
-                double score = _dtw.Recognize(_video);
-                results.Text = "Score : " + score;
-                //if (!s.Contains("__UNKNOWN"))
-                //{
-                // There was no match so reset the buffer
-                //    _video = new ArrayList();
-                //}
+                double s = _dtw.Recognize(_video);
+                results.Text = "Recognised as: " + s;
+                /*if (s!=0)
+                {
+                    // There was no match so reset the buffer
+                    _video = new ArrayList();
+                }*/
             }
 
             // Ensures that we remember only the last x frames

@@ -62,7 +62,6 @@ namespace DTWGestureRecognition
                 tmp[(2 * i) + 1] = _points[i].Y;
                 tmp[(2 * i) + 2] = _points[i].Z;
             }
-
             return tmp;
         }
     }

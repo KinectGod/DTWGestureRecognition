@@ -100,6 +100,7 @@ namespace DTWGestureRecognition
             */
 
 
+
             // Launch the event!
             Skeleton2DdataCoordReady(null, new Skeleton2DdataCoordEventArgs(p)); 
         }

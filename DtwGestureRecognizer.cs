@@ -72,7 +72,7 @@ namespace DTWGestureRecognition
         private readonly ArrayList _sequences;
 
 
-        private readonly double judgement;
+        private readonly double judgement = 120;
 
         /// <summary>
         /// Initializes a new instance of the DtwGestureRecognizer class
@@ -160,7 +160,7 @@ namespace DTWGestureRecognition
             {
                 var example = (ArrayList)_sequences[i];
                 ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
-                if (Dist2((double[])seq[seq.Count - 1], (double[])example[example.Count - 1]) < _firstThreshold)
+                if (true)//Dist2((double[])seq[seq.Count - 1], (double[])example[example.Count - 1]) < _firstThreshold)
                 {
                     double d = Dtw(seq, example) / example.Count;
                     if (d < minDist)
@@ -233,14 +233,14 @@ namespace DTWGestureRecognition
         {
             // Init
             var seq1R = new ArrayList(seq1);
-            seq1R.Reverse();
+           // seq1R.Reverse();
             var seq2R = new ArrayList(seq2);
-            seq2R.Reverse();
+           // seq2R.Reverse();
             var tab = new double[seq1R.Count + 1, seq2R.Count + 1];
             var slopeI = new int[seq1R.Count + 1, seq2R.Count + 1];
             var slopeJ = new int[seq1R.Count + 1, seq2R.Count + 1];
 
-            for (int i = 0; i < seq1R.Count + 1; i++)
+            /*for (int i = 0; i < seq1R.Count + 1; i++)
             {
                 for (int j = 0; j < seq2R.Count + 1; j++)
                 {
@@ -288,9 +288,9 @@ namespace DTWGestureRecognition
                 {
                     bestMatch = tab[i, seq2R.Count];
                 }
-            }
-
-            return bestMatch;
+            }*/
+            return ((double[])seq1R[0])[14];
+            //return bestMatch;
         }
 
         /// <summary>
@@ -332,6 +332,7 @@ namespace DTWGestureRecognition
             //return Math.Sqrt(d);
              * */
             double score = 0.0;
+            double[] temp = new double [2];
             // 0 represent learner, 1 master
             double[] XYplane = new double[2];
             double[] ZYplane = new double[2];
@@ -341,7 +342,7 @@ namespace DTWGestureRecognition
             Vector3D[] ProjectToXY = new Vector3D[2];
             Vector3D[] ProjectToZY = new Vector3D[2];
 
-            for (int i = 0; i < _dimension; i+=3)
+            for (int i = 0; i < _dimension-5; i+=3)
             {
                 // calculate vector joining two points
                 Learner_joint0to1 = new Vector3D(a[i] - a[i + 3], a[i + 1] - a[i + 4], a[i + 2] - a[i + 5]);
@@ -355,13 +356,29 @@ namespace DTWGestureRecognition
                 // calculate angle between the vector and the plane
                 XYplane[0] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToXY[0]);
                 XYplane[1] = Vector3D.AngleBetween(master_joint0to1, ProjectToXY[1]);
+                temp[0] = Math.Abs(XYplane[0] - XYplane[1]);
                 ZYplane[0] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToZY[0]);
-                ZYplane[1] = Vector3D.AngleBetween(Learner_joint0to1, ProjectToZY[0]);
+                ZYplane[1] = Vector3D.AngleBetween(master_joint0to1, ProjectToZY[1]);
+                temp[1] = Math.Abs(ZYplane[0] - ZYplane[1]);
 
-                
+                for (int j = 0; j<2; j++)
+                {
+                    if (temp[j] < judgement/5) {
+                        score += 0.5;
+                    } else if (temp[j] < judgement * 2 / 5) {
+                        score += 0.4;
+                    } else if (temp[j] < judgement * 3 / 5) {
+                        score += 0.3;
+                    } else if (temp[j] < judgement * 4 / 5) {
+                        score += 0.2;
+                    } else if (temp[j] < judgement) {
+                        score += 0.1;
+                    }
+                }
+
             }
 
-            return 0;
+            return score;
 
         }
     }
